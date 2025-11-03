@@ -8,12 +8,21 @@ import sys
 import torch
 from ultralytics import YOLO
 
-# Stała konfiguracja (edytuj te wartości w pliku, jeśli chcesz inne ustawienia)
+
 WEIGHTS = "yolov9t.pt"
 DATA = "dataset/data.yaml"
-EPOCHS = 10
+EPOCHS = 50
 IMGSZ = 640
 BATCH = 16
+
+augmentations = {
+    "hsv_h": 0.5,     # Zmiana odcienia
+    "hsv_s": 0.5,     # Zmiana nasycenia
+    "hsv_v": 0.5,     # Zmiana jasności
+    "translate": 0.3, # Translacja
+    "scale": 0.5,     # Skalowanie
+    "shear": 0.3,     # Ścinanie
+}
 
 
 def get_device() -> str:
@@ -38,7 +47,7 @@ def main():
     model.info()
 
     try:
-        model.train(data=DATA, epochs=EPOCHS, imgsz=IMGSZ, device=device, batch=BATCH)
+        model.train(data=DATA, epochs=EPOCHS, imgsz=IMGSZ, device=device, batch=BATCH, patience=5, **augmentations)
     except Exception as e:
         print(f"Trening nie powiódł się: {e}")
         sys.exit(1)
